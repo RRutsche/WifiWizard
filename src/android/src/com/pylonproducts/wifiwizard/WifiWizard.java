@@ -532,21 +532,21 @@ public class WifiWizard extends CordovaPlugin {
     /**
      * This method retrieves the current network state
      * Connection State is one of following constants: 
+     *     ASSOCIATED
+     *     ASSOCIATING
      *     AUTHENTICATING
-     *     BLOCKED
-     *     CAPTIVE_PORTAL_CHECK
-     *     CONNECTED
-     *     CONNECTING
+     *     COMPLETED
      *     DISCONNECTED
-     *     DISCONNECTING
-     *     FAILED
-     *     IDLE
-     *     OBTAINING_IPADDR
+     *     DORMANT
+     *     FOUR_WAY_HANDSHAKE
+     *     GROUP_HANDSHAKE
+     *     INACTIVE
+     *     INTERFACE_DISABLED
+     *     INVALID
      *     SCANNING
-     *     SUSPENDED
-     *     VERIFYING_POOR_LINK
+     *     UNINITIALIZED
      *
-     *  For more information see https://developer.android.com/reference/android/net/NetworkInfo.DetailedState.html
+     *  For more information see https://developer.android.com/reference/android/net/wifi/SupplicantState.html
      *
      *    @param    callbackContext        A Cordova callback context
      *    @return    true if connectionstate was found, false if not.
@@ -565,14 +565,13 @@ public class WifiWizard extends CordovaPlugin {
         }
 
         SupplicantState state = info.getSupplicantState();
-        NetworkInfo.DetailedState detailed = info.getDetailedStateOf(state);
 
-        if(detailed.name().isEmpty()){
+        if(state.toString().isEmpty()){
             callbackContext.error("Undefined network state");
             return false;
         }
 
-        callbackContext.success(detailed.toString());
+        callbackContext.success(state.toString());
         return true;
     }
 
