@@ -262,7 +262,7 @@ var WifiWizard = {
             console.log("getNetworkState first parameter must be a function to handle NETWORK STATE");
         }
         cordova.exec(win, fail, 'WifiWizard', 'getNetworkState', []);
-    }
+    },
 
     /**
      *  Gets 'true' or 'false' if WiFi is enabled or disabled
