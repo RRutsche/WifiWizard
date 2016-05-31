@@ -44,6 +44,7 @@ public class WifiWizard extends CordovaPlugin {
     private static final String GET_SCAN_RESULTS = "getScanResults";
     private static final String GET_CONNECTED_SSID = "getConnectedSSID";
     private static final String GET_CONNECTED_BSSID = "getConnectedBSSID";
+    private static final String GET_NETWORK_STATE = "getNetworkState";
     private static final String IS_WIFI_ENABLED = "isWifiEnabled";
     private static final String SET_WIFI_ENABLED = "setWifiEnabled";
     private static final String TAG = "WifiWizard";
@@ -102,6 +103,9 @@ public class WifiWizard extends CordovaPlugin {
         }
         else if(action.equals(GET_CONNECTED_BSSID)) {
             return this.getConnectedBSSID(callbackContext);
+        }
+        else if(action.equals(GET_NETWORK_STATE)) {
+            return this.getNetworkState(callbackContext);
         }
         else {
             callbackContext.error("Incorrect action parameter: " + action);
@@ -522,6 +526,53 @@ public class WifiWizard extends CordovaPlugin {
         }
 
         callbackContext.success(bssid);
+        return true;
+    }
+
+    /**
+     * This method retrieves the current network state
+     * Connection State is one of following constants: 
+     *     AUTHENTICATING
+     *     BLOCKED
+     *     CAPTIVE_PORTAL_CHECK
+     *     CONNECTED
+     *     CONNECTING
+     *     DISCONNECTED
+     *     DISCONNECTING
+     *     FAILED
+     *     IDLE
+     *     OBTAINING_IPADDR
+     *     SCANNING
+     *     SUSPENDED
+     *     VERIFYING_POOR_LINK
+     *
+     *  For more information see https://developer.android.com/reference/android/net/NetworkInfo.DetailedState.html
+     *
+     *    @param    callbackContext        A Cordova callback context
+     *    @return    true if connectionstate was found, false if not.
+    */
+    private boolean getNetworkState(CallbackContext callbackContext) {
+        if(!wifiManager.isWifiEnabled()){
+            callbackContext.error("Wifi is disabled");
+            return false;
+        }
+
+        WifiInfo info = wifiManager.getConnectionInfo();
+
+        if(info == null){
+            callbackContext.error("Unable to read wifi info");
+            return false;
+        }
+
+        SupplicantState state = info.getSupplicantState();
+        NetworkInfo.DetailedState detailed = info.getDetailedStateOf(state);
+
+        if(detailed.name().isEmpty()){
+            callbackContext.error("Undefined network state");
+            return false;
+        }
+
+        callbackContext.success(detailed.toString());
         return true;
     }
 
